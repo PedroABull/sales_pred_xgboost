@@ -15,7 +15,7 @@ O marketplace Olist, um dos maiores do Brasil, precisa de um modelo de previsão
 
 ## Objetivos
 
-O objetivo deste projeto é, partindo do conjunto de dados fornecidos pela empresa, construir um processo de ETL para criar uma base de vendas históricas da empresa com 24 meses, partido de outubro de 2016. Em seguida, aplicar técnicas de ciência de dados para criar um modelo de previsão de vendas para a empresa. Com isso, é possível otimizar o planejamento logístico e financeiro da mesma no médio prazo, trazendo resultados consistentes e confiáveis sobre a tendência do que deve acontecer em relação às suas vendas nos próximos meses, seja em relação ao faturamento total em unidades ou, também, em relação ao faturamento por estado e/ou categoria de produtos. 
+O objetivo deste projeto é, partindo do conjunto de dados fornecidos pela empresa, construir um processo de ETL para criar uma base de vendas históricas com 24 meses, iniciando-se de outubro de 2016. Em seguida, aplicar técnicas de ciência de dados para criar um modelo de previsão de vendas para a empresa. Com isso, é possível otimizar seu planejamento logístico e financeiro no médio prazo, trazendo resultados consistentes e confiáveis sobre a tendência do que deve acontecer em relação às suas vendas nos próximos meses, seja em relação ao faturamento total em unidades ou, também, em relação ao faturamento por estado e/ou categoria de produtos. 
 
 
 ## Estrutura do repositório
@@ -42,7 +42,7 @@ O repositório está estruturado da seguinte forma:
 
 - Na pasta `reports` estão os relatórios gerados durante o projeto utilizando a biblioteca [ydata-profiling](https://github.com/ydataai/ydata-profiling).
 
-As bases de dados originais fornecidas pela empresa estão estruturadas conforme a imagem abaixo. Esses arquivos podem ser baixados através [link original para o dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce). A partir desses dados, a base inicial para o projeto foi construida conforme detalhado no notebook [`01_sales_pred_db_creation`](notebooks/01_sales_pred_db_creation.ipynb).
+As bases de dados originais fornecidas pela empresa estão estruturadas conforme a imagem abaixo. Esses arquivos podem ser baixados através do [link original para o dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce). A partir desses dados, a base inicial para o projeto foi construida conforme detalhado no notebook [`01_sales_pred_db_creation`](notebooks/01_sales_pred_db_creation.ipynb).
 
 ![data_structure](images/data_structure.png)
 
@@ -77,7 +77,7 @@ Em seguida, a correlação das variáveis foi avaliada em pares com o gráfico d
 Após as análises, as seguintes conclusões foram tomadas:
 
 - Avaliando a cardinalidade das colunas(número de valores distintos), temos que as colunas de order-id, customer_id, product_id são números de identificação específicos para cada pedido. Esse tipo de informação não agrega valor à análise e, por isso, as colunas serão desconsideradas;
-- Avaliando o pairplot, temos que a coluna de product_description_lenght não tem correlação relevante com o número de unidades vendidas. Assim, essa coluna foi excluida;
+- Avaliando o pairplot, temos que a coluna de product_description_lenght não tem correlação relevante com o número de unidades vendidas. Assim, essa coluna será excluida;
 - A coluna de zip_code_prefix também será excluida para evitar duplicidade de informações, já que a região de venda é representada pela coluna customer_state.
 
 
@@ -87,17 +87,17 @@ Por fim, foram utilizados gráficos de boxplot para avaliar tanto a distribuiç�
 
 Avaliando especificamente a coluna target ('order_units'), temos:
 
-![histogram](images/histograma.png)
+![histogram](images/hist.png)
 
 De fato existem poucos registros de vendas de mais de uma unidade no mesmo pedido. Porém, esses dados serão mantidos, já que não existe um padrão claro para a venda de mais unidades de um produto por pedido e, ao que tudo indica, é apenas a representação da dinâmica de vendas de determinados produtos
 
 ## Etapa 3 - Feature Engineering
 
-Após o completo entendimento dos dados, na etapa 3 fora feitos os ajustes necessários nas features para formatá-las de modo que o modelo de machine learning consiga interpretá-los.
+Após o completo entendimento dos dados, na etapa 3 foram feitos os ajustes necessários nas features para formatá-las de modo que o modelo de machine learning consiga interpretá-los.
 
-O primeiro tratamento aplicado à base for para a coluna categórica 'product_category_name', que tinha 73 valores distintos inicialmente e com formato de texto. Dessa forma, adotei a abordagem de selecionar as categorias que representam 80% dos registros de venda, totalizando 15 categorias, para manter no modelo, agrupando o restante como um único grupo. Com essa abordagem, foi possível manter as categorias mais representativas sem aumentar demasiadamente a dimensionalidade da base de dados. Como nessa etapa a base conta com apenas 5 colunas, sendo que uma delas é a coluna target, a adição de outras 15 colunas para descrever as categorias foi uma abordagem adequada.
+O primeiro tratamento aplicado à base foi para a coluna categórica 'product_category_name', que tinha 73 valores distintos inicialmente e com formato de texto. Dessa forma, adotei a abordagem de selecionar as categorias que representam 80% dos registros de venda para manter no modelo, totalizando 15 categorias, e agrupar o restante como um único grupo. Assim, foi possível manter as categorias mais representativas sem aumentar demasiadamente a dimensionalidade da base de dados. Como nessa etapa a base conta com apenas 5 colunas, sendo que uma delas é a coluna target, a adição de outras 15 colunas para descrever as categorias é uma abordagem adequada.
 
-Assim, foi aplicado o OneHotEncoder para transformar as informações categóricas de texto para valores numéricos, sendo que cada coluna adicionada representa uma categoria distinta e valores binários, com 1 indicando que a venda pertece àquela categoria e 0 indicando o contrário.
+Assim, foi aplicado o OneHotEncoder para transformar as informações categóricas de texto para valores numéricos, sendo que cada coluna adicionada representa uma categoria distinta e contém valores binários, com 1 indicando que a venda pertece àquela categoria e 0 indicando o contrário.
 
 Avançado para a coluna 'custome_state', a abordagem escolhida foi a Codificação Frequencial. Essa técnica serve para transformar variáveis categóricas em valores numéricos com base na frequência de ocorrência de cada categoria no conjunto de dados em relação à variável target. Como exemplo, se 40% das vendas foram feitas para o estado de São Paulo, a sigla SP será substituida por 0.4 em todos os registros de vendas. Esse racional foi replicado para todos os estados brasileiros.
 
@@ -113,7 +113,7 @@ Ao final, a base de dados preparada pelo modelo apresenta as seguintes caracter�
 
 ![data_info](images/data_info.png)
 
-Com a base de dados definida, separei o último mês dos registros em uma base a parte para aplicar ao modelo finalizado e avaliar a performance em dados não vistos pelo modelo. Essa é uma abordagem eficaz pára simular um ambiente de produção para uma validação preliminar do modelo.
+Com a base de dados definida, separei o último mês dos registros em uma base a parte para aplicar ao modelo finalizado e avaliar a performance em dados não vistos pelo modelo. Essa é uma abordagem eficaz para simular um ambiente de produção para uma validação preliminar do modelo.
 
 ## Etapa 4 - Criando o Modelo
 
@@ -124,7 +124,7 @@ O modelo foi definido incialmente com os seguintes hiperparâmetros:
 - `n_estimators` : Número de árvores criadas pelo modelo - Valor: 150
 - `objective` : Define a função de perda que o modelo usará para otimizar durante o treinamento - Valor: 'reg:squarederror'
 
-Foi aplicada a validação cruzada para obeter um parâmetro inicial da performance do modelo e evitar o overfitting, chegando a um RMSE de 0.47, que representa um erro médio de 0.47 venda para cada registro.
+Foi aplicada a validação cruzada para obter um parâmetro inicial da performance do modelo e evitar o overfitting, chegando a um RMSE de 0.47, que representa um erro médio de 0.47 venda para cada registro.
 
 Após o treinamento do modelo, foi obtido o seguinte resultado para os dados de teste:
 
